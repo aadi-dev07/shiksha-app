@@ -1,7 +1,6 @@
-
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { Book, Star, MessageSquare, Users, Bell } from "lucide-react";
+import { Book, Star, MessageSquare, Users, Bell, FileText } from "lucide-react";
 import Welcome from "@/components/dashboard/Welcome";
 import SmartPlan from "@/components/dashboard/SmartPlan";
 import Courses from "@/components/dashboard/Courses";
@@ -11,6 +10,7 @@ import { Link } from "react-router-dom";
 
 const menuItems = [
   { title: "My Learning", icon: Book, path: "/learning" },
+  { title: "Shared Notes", icon: FileText, path: "/shared-notes" },
   { title: "Achievements", icon: Star, path: "/achievements" },
   { title: "Chat Support", icon: MessageSquare, path: "/dashboard" },
   { title: "Refer Friends", icon: Users, path: "/refer-friends" },

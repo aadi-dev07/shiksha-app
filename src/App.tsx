@@ -13,6 +13,7 @@ import MyLearning from "./pages/MyLearning";
 import Achievements from "./pages/Achievements";
 import ReferFriends from "./pages/ReferFriends";
 import Notifications from "./pages/Notifications";
+import SharedNotes from "./pages/SharedNotes";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +103,16 @@ const App = () => (
           <ProtectedRoute>
             <TooltipProvider>
               <Notifications />
+            </TooltipProvider>
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/shared-notes" 
+        element={
+          <ProtectedRoute>
+            <TooltipProvider>
+              <SharedNotes />
             </TooltipProvider>
           </ProtectedRoute>
         } 
