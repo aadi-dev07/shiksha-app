@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserButton } from "@clerk/clerk-react";
 import Reveal from "@/components/ui/reveal";
 
 const Welcome = () => {
@@ -15,10 +16,13 @@ const Welcome = () => {
     <Reveal>
       <Card className="overflow-hidden bg-gradient-to-r from-purple/90 to-blue-dark/90">
         <CardContent className="p-6 text-white flex items-center gap-6">
-          <Avatar className="h-16 w-16 border-2 border-white">
-            <AvatarImage src="/placeholder.svg" alt="Student" />
-            <AvatarFallback>SS</AvatarFallback>
-          </Avatar>
+          <UserButton
+            appearance={{
+              elements: {
+                userButtonAvatarBox: 'w-16 h-16 border-2 border-white rounded-full'
+              }
+            }}
+          />
           <div>
             <h1 className="text-2xl font-bold mb-2">
               {getGreeting()}, Student! 🌟
