@@ -2,10 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@clerk/clerk-react';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,9 +35,9 @@ const Header = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <span className="text-2xl font-bold bg-gradient-to-r from-purple to-blue-dark bg-clip-text text-transparent">
+          <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-purple to-blue-dark bg-clip-text text-transparent">
             ShikshaSetuvah
-          </span>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
@@ -43,12 +46,31 @@ const Header = () => {
           <a href="#programs" className="text-gray-700 hover:text-purple transition-colors">Programs</a>
           <a href="#features" className="text-gray-700 hover:text-purple transition-colors">Features</a>
           <a href="#testimonials" className="text-gray-700 hover:text-purple transition-colors">Testimonials</a>
-          <Button 
-            asChild
-            className="primary-gradient text-white hover:shadow-lg"
-          >
-            <a href="#cta">Start Learning</a>
-          </Button>
+          
+          {isSignedIn ? (
+            <Button 
+              asChild
+              className="primary-gradient text-white hover:shadow-lg"
+            >
+              <Link to="/dashboard">Dashboard</Link>
+            </Button>
+          ) : (
+            <>
+              <Button 
+                variant="ghost"
+                asChild
+                className="text-gray-700 hover:text-purple"
+              >
+                <Link to="/sign-in">Sign In</Link>
+              </Button>
+              <Button 
+                asChild
+                className="primary-gradient text-white hover:shadow-lg"
+              >
+                <Link to="/sign-up">Start Learning</Link>
+              </Button>
+            </>
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -100,13 +122,34 @@ const Header = () => {
             >
               Testimonials
             </a>
-            <Button 
-              asChild
-              className="primary-gradient text-white w-full"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <a href="#cta">Start Learning</a>
-            </Button>
+            
+            {isSignedIn ? (
+              <Button 
+                asChild
+                className="primary-gradient text-white w-full"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button 
+                  asChild
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Link to="/sign-in">Sign In</Link>
+                </Button>
+                <Button 
+                  asChild
+                  className="primary-gradient text-white w-full"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Link to="/sign-up">Start Learning</Link>
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       )}

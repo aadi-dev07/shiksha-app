@@ -2,6 +2,7 @@
 import React from 'react';
 import Reveal from '@/components/ui/reveal';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const CTA = () => {
   return (
@@ -23,12 +24,12 @@ const CTA = () => {
           
           <Reveal delay={400}>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button size="lg" className="bg-white text-purple hover:bg-white/90 hover:scale-105 transition-all duration-300 text-lg px-8">
-                Start Learning Now
+              <Button asChild size="lg" className="bg-white text-purple hover:bg-white/90 hover:scale-105 transition-all duration-300 text-lg px-8">
+                <Link to="/sign-up">Start Learning Now</Link>
               </Button>
               
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-300 text-lg px-8">
-                Explore Programs
+              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-300 text-lg px-8">
+                <Link to="/sign-in">Sign In</Link>
               </Button>
             </div>
           </Reveal>

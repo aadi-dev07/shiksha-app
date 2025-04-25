@@ -12,7 +12,7 @@ const SignIn = () => {
               card: 'bg-white shadow-xl rounded-xl'
             }
           }}
-          redirectUrl="/dashboard"
+          fallbackRedirectUrl="/dashboard"
         />
       </div>
     </div>
