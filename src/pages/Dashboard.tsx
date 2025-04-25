@@ -1,3 +1,4 @@
+
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Book, Star, MessageSquare, Users, Bell } from "lucide-react";
@@ -6,13 +7,14 @@ import SmartPlan from "@/components/dashboard/SmartPlan";
 import Courses from "@/components/dashboard/Courses";
 import Credits from "@/components/dashboard/Credits";
 import ChatBot from "@/components/dashboard/ChatBot";
+import { Link } from "react-router-dom";
 
 const menuItems = [
-  { title: "My Learning", icon: Book },
-  { title: "Achievements", icon: Star },
-  { title: "Chat Support", icon: MessageSquare },
-  { title: "Refer Friends", icon: Users },
-  { title: "Notifications", icon: Bell },
+  { title: "My Learning", icon: Book, path: "/learning" },
+  { title: "Achievements", icon: Star, path: "/achievements" },
+  { title: "Chat Support", icon: MessageSquare, path: "/dashboard" },
+  { title: "Refer Friends", icon: Users, path: "/dashboard" },
+  { title: "Notifications", icon: Bell, path: "/dashboard" },
 ];
 
 const Dashboard = () => {
@@ -27,9 +29,11 @@ const Dashboard = () => {
                 <SidebarMenu>
                   {menuItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton>
-                        <item.icon className="w-5 h-5" />
-                        <span>{item.title}</span>
+                      <SidebarMenuButton asChild>
+                        <Link to={item.path}>
+                          <item.icon className="w-5 h-5" />
+                          <span>{item.title}</span>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
