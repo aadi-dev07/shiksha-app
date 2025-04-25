@@ -13,7 +13,6 @@ const SignIn = () => {
             }
           }}
           redirectUrl="/dashboard"
-          routing="path"
         />
       </div>
     </div>
