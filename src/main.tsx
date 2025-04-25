@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { ClerkProvider } from "@clerk/clerk-react";
 import App from './App.tsx';
 import './index.css';
+import { BrowserRouter } from "react-router-dom";
 
 // Use the provided publishable key
 const PUBLISHABLE_KEY = "pk_test_ZmluZS1vc3RyaWNoLTc5LmNsZXJrLmFjY291bnRzLmRldiQ";
@@ -13,6 +14,8 @@ if (!PUBLISHABLE_KEY) {
 
 createRoot(document.getElementById("root")!).render(
   <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </ClerkProvider>
 );

@@ -12,7 +12,11 @@ const SignUp = () => {
               card: 'bg-white shadow-xl rounded-xl'
             }
           }}
-          fallbackRedirectUrl="/dashboard"
+          routing="path"
+          path="/sign-up"
+          signInUrl="/sign-in"
+          afterSignUpUrl="/dashboard"
+          redirectUrl="/dashboard"
         />
       </div>
     </div>
