@@ -19,6 +19,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const subjects = [
   'Mathematics',
@@ -28,12 +31,29 @@ const subjects = [
   'Computer Science',
 ];
 
+// Define form schema with zod
+const formSchema = z.object({
+  file: z.any(),
+  subject: z.string().optional(),
+  description: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
 export const FileUploader = () => {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
+  
+  // Initialize the form
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      subject: '',
+      description: '',
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (data: FormValues) => {
     setIsUploading(true);
     
     // Simulate upload delay
@@ -43,7 +63,10 @@ export const FileUploader = () => {
         title: "Success! 🎉",
         description: "Your notes have been shared with the community.",
       });
+      form.reset();
     }, 1500);
+    
+    console.log('Form data:', data);
   };
 
   return (
@@ -58,11 +81,12 @@ export const FileUploader = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
+              control={form.control}
               name="file"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Upload File (PDF/DOC/Image)</FormLabel>
                   <FormControl>
@@ -70,6 +94,11 @@ export const FileUploader = () => {
                       type="file" 
                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                       className="cursor-pointer"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          field.onChange(e.target.files[0]);
+                        }
+                      }}
                     />
                   </FormControl>
                 </FormItem>
@@ -77,11 +106,15 @@ export const FileUploader = () => {
             />
             
             <FormField
+              control={form.control}
               name="subject"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Subject</FormLabel>
-                  <Select>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a subject" />
                     </SelectTrigger>
@@ -98,12 +131,13 @@ export const FileUploader = () => {
             />
 
             <FormField
+              control={form.control}
               name="description"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Brief description of your notes..." />
+                    <Input placeholder="Brief description of your notes..." {...field} />
                   </FormControl>
                 </FormItem>
               )}
