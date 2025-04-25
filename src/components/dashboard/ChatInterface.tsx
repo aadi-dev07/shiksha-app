@@ -46,15 +46,39 @@ const ChatInterface = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
     setIsTyping(true);
 
     try {
+      console.log("Sending request to n8n webhook...");
       const response = await fetch("https://agentmart.app.n8n.cloud/webhook-test/edusathi", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({ message: inputMessage }),
       });
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      console.log("Response status:", response.status);
+      const contentType = response.headers.get("content-type");
+      console.log("Response content type:", contentType);
+      
+      let data;
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+        console.log("Received JSON response:", data);
+      } else {
+        const textData = await response.text();
+        console.log("Received text response:", textData);
+        try {
+          // Try to parse text as JSON in case content-type header is incorrect
+          data = JSON.parse(textData);
+        } catch (e) {
+          // If parsing fails, create a simple object with the text as response
+          data = { response: textData };
+        }
+      }
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -65,11 +89,21 @@ const ChatInterface = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
+      console.error("Error communicating with webhook:", error);
       toast({
         title: "Error",
-        description: "Could not send message. Please try again.",
+        description: "Could not receive response. Please try again.",
         variant: "destructive",
       });
+      
+      // Add fallback bot message on error
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "Sorry, I'm having trouble connecting right now. Please try again later.",
+        isBot: true,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
     }
