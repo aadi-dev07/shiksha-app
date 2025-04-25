@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +11,8 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import MyLearning from "./pages/MyLearning";
 import Achievements from "./pages/Achievements";
+import ReferFriends from "./pages/ReferFriends";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,26 @@ const App = () => (
           <ProtectedRoute>
             <TooltipProvider>
               <Achievements />
+            </TooltipProvider>
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/refer-friends" 
+        element={
+          <ProtectedRoute>
+            <TooltipProvider>
+              <ReferFriends />
+            </TooltipProvider>
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/notifications" 
+        element={
+          <ProtectedRoute>
+            <TooltipProvider>
+              <Notifications />
             </TooltipProvider>
           </ProtectedRoute>
         } 

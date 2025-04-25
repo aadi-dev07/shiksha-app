@@ -13,8 +13,8 @@ const menuItems = [
   { title: "My Learning", icon: Book, path: "/learning" },
   { title: "Achievements", icon: Star, path: "/achievements" },
   { title: "Chat Support", icon: MessageSquare, path: "/dashboard" },
-  { title: "Refer Friends", icon: Users, path: "/dashboard" },
-  { title: "Notifications", icon: Bell, path: "/dashboard" },
+  { title: "Refer Friends", icon: Users, path: "/refer-friends" },
+  { title: "Notifications", icon: Bell, path: "/notifications" },
 ];
 
 const Dashboard = () => {
