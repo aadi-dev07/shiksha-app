@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Reveal } from "@/components/ui/reveal";
+import Reveal from "@/components/ui/reveal";
 
 const SmartPlan = () => {
   const tasks = [

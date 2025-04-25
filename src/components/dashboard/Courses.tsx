@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Book, Lightbulb } from "lucide-react";
-import { Reveal } from "@/components/ui/reveal";
+import Reveal from "@/components/ui/reveal";
 
 const courses = [
   {

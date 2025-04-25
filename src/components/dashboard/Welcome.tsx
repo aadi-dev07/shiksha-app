@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Reveal } from "@/components/ui/reveal";
+import Reveal from "@/components/ui/reveal";
 
 const Welcome = () => {
   const getGreeting = () => {
