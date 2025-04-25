@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
+import { PhoneCall } from 'lucide-react';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -46,6 +46,15 @@ const Header = () => {
           <a href="#programs" className="text-gray-700 hover:text-purple transition-colors">Programs</a>
           <a href="#features" className="text-gray-700 hover:text-purple transition-colors">Features</a>
           <a href="#testimonials" className="text-gray-700 hover:text-purple transition-colors">Testimonials</a>
+          
+          {/* Book a Call Button */}
+          <Button 
+            className="primary-gradient text-white hover:shadow-lg flex items-center gap-2"
+            onClick={() => window.open('https://calendly.com/shiksha-setuvah', '_blank')}
+          >
+            <PhoneCall size={16} />
+            Book a Call
+          </Button>
           
           {isSignedIn ? (
             <Button 
@@ -123,6 +132,16 @@ const Header = () => {
               Testimonials
             </a>
             
+            {/* Book a Call Button for Mobile */}
+            <Button 
+              className="primary-gradient text-white w-full flex items-center gap-2"
+              onClick={() => window.open('https://calendly.com/shiksha-setuvah', '_blank')}
+              size="lg"
+            >
+              <PhoneCall size={16} />
+              Book a Call
+            </Button>
+
             {isSignedIn ? (
               <Button 
                 asChild
