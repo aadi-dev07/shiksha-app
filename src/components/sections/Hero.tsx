@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import Reveal from '@/components/ui/reveal';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
@@ -25,8 +26,8 @@ const Hero = () => {
           </Reveal>
 
           <Reveal delay={400}>
-            <Button className="btn-primary text-lg">
-              Start Learning Now
+            <Button className="btn-primary text-lg" asChild>
+              <Link to="/sign-up">Start Learning Now</Link>
             </Button>
           </Reveal>
         </div>
