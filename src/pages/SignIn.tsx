@@ -16,7 +16,6 @@ const SignIn = () => {
           path="/sign-in"
           signUpUrl="/sign-up"
           afterSignInUrl="/dashboard"
-          redirectUrl="/dashboard"
         />
       </div>
     </div>
