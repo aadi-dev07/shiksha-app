@@ -36,9 +36,9 @@ const Hero = () => {
           <Reveal direction="right">
             <div className="relative w-full max-w-md mx-auto animate-float">
               <img 
-                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=600&h=600"
-                alt="Students learning" 
-                className="rounded-2xl shadow-2xl border-4 border-white/50"
+                src="/lovable-uploads/a81245bb-9a10-4ed4-ac8a-8348bb1bb599.png"
+                alt="Students learning together" 
+                className="rounded-2xl shadow-2xl border-4 border-white/50 object-cover w-full h-full"
               />
               
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-lg card-hover">
