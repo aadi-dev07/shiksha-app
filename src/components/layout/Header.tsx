@@ -33,24 +33,21 @@ const Header = () => {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo */}
         <div className="flex items-center">
           <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-purple to-blue-dark bg-clip-text text-transparent">
             ShikshaSetuvah
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           <a href="#about" className="text-gray-700 hover:text-purple transition-colors">About</a>
           <a href="#programs" className="text-gray-700 hover:text-purple transition-colors">Programs</a>
           <a href="#features" className="text-gray-700 hover:text-purple transition-colors">Features</a>
           <a href="#testimonials" className="text-gray-700 hover:text-purple transition-colors">Testimonials</a>
           
-          {/* Book a Call Button */}
           <Button 
             className="primary-gradient text-white hover:shadow-lg flex items-center gap-2"
-            onClick={() => window.open('https://calendly.com/shiksha-setuvah', '_blank')}
+            onClick={() => window.open('https://vapi.ai/', '_blank')}
           >
             <PhoneCall size={16} />
             Book a Call
@@ -82,7 +79,6 @@ const Header = () => {
           )}
         </nav>
 
-        {/* Mobile Menu Button */}
         <button 
           className="md:hidden text-gray-700"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -99,7 +95,6 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 py-4">
           <nav className="container mx-auto flex flex-col space-y-4 px-4">
@@ -132,10 +127,9 @@ const Header = () => {
               Testimonials
             </a>
             
-            {/* Book a Call Button for Mobile */}
             <Button 
               className="primary-gradient text-white w-full flex items-center gap-2"
-              onClick={() => window.open('https://calendly.com/shiksha-setuvah', '_blank')}
+              onClick={() => window.open('https://vapi.ai/', '_blank')}
               size="lg"
             >
               <PhoneCall size={16} />
