@@ -17,7 +17,7 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -42,7 +42,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export const FileUploader = () => {
-  const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
@@ -58,11 +57,7 @@ export const FileUploader = () => {
   const onSubmit = async (data: FormValues) => {
     try {
       if (!selectedFile) {
-        toast({
-          title: "Error",
-          description: "Please select a file to upload",
-          variant: "destructive"
-        });
+        toast.error("Please select a file to upload");
         return;
       }
 
@@ -82,20 +77,13 @@ export const FileUploader = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Success! 🎉",
-        description: "Your notes have been shared with the community.",
-      });
+      toast.success("Your notes have been shared with the community.");
       
       form.reset();
       setSelectedFile(null);
     } catch (error) {
       console.error('Upload error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to upload notes. Please try again.",
-        variant: "destructive"
-      });
+      toast.error("Failed to upload notes. Please try again.");
     } finally {
       setIsUploading(false);
     }
