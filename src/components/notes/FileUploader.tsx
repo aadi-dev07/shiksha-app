@@ -17,13 +17,12 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/integrations/supabase/client';
-import { uploadFile } from '@/lib/supabase-utils';
 
 const subjects = [
   'Mathematics',
@@ -63,19 +62,60 @@ export const FileUploader = () => {
 
       setIsUploading(true);
       
+      // First, create a storage bucket if it doesn't exist
+      try {
+        // Check if the bucket exists
+        const { data: buckets } = await supabase.storage.listBuckets();
+        const notesBucket = buckets?.find(bucket => bucket.name === 'notes');
+        
+        if (!notesBucket) {
+          // Create the notes bucket if it doesn't exist
+          await supabase.storage.createBucket('notes', {
+            public: true,
+            fileSizeLimit: 50000000, // 50MB limit
+          });
+          console.log('Created notes bucket');
+        }
+      } catch (bucketError) {
+        console.error('Error checking/creating bucket:', bucketError);
+        // Continue anyway, the bucket might already exist
+      }
+
       // Upload file to storage bucket
-      const filePath = await uploadFile(selectedFile);
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      console.log('Uploading file:', filePath);
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('notes')
+        .upload(filePath, selectedFile);
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      if (!uploadData || !uploadData.path) {
+        console.error('No upload data returned');
+        throw new Error('Failed to get upload path');
+      }
+
+      console.log('File uploaded successfully:', uploadData.path);
 
       // Insert note metadata into database
-      const { error } = await supabase.from('notes').insert({
+      const { error: dbError } = await supabase.from('notes').insert({
         title: data.title,
         description: data.description || null,
         subject: data.subject,
-        file_path: filePath,
-        uploader_id: (await supabase.auth.getUser()).data.user?.id,
+        file_path: uploadData.path,
+        uploader_id: (await supabase.auth.getUser()).data.user?.id || '00000000-0000-0000-0000-000000000000',
       });
 
-      if (error) throw error;
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw dbError;
+      }
 
       toast.success("Your notes have been shared with the community.");
       
