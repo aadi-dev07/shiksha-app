@@ -34,7 +34,6 @@ const subjects = [
 ];
 
 const formSchema = z.object({
-  file: z.any().refine((file) => file instanceof File, "Please select a file"),
   subject: z.string().min(1, "Please select a subject"),
   description: z.string().optional(),
   title: z.string().min(1, "Please enter a title")
@@ -45,6 +44,7 @@ type FormValues = z.infer<typeof formSchema>;
 export const FileUploader = () => {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -57,10 +57,19 @@ export const FileUploader = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
+      if (!selectedFile) {
+        toast({
+          title: "Error",
+          description: "Please select a file to upload",
+          variant: "destructive"
+        });
+        return;
+      }
+
       setIsUploading(true);
       
       // Upload file to storage bucket
-      const filePath = await uploadFile(data.file);
+      const filePath = await uploadFile(selectedFile);
 
       // Insert note metadata into database
       const { error } = await supabase.from('notes').insert({
@@ -79,6 +88,7 @@ export const FileUploader = () => {
       });
       
       form.reset();
+      setSelectedFile(null);
     } catch (error) {
       console.error('Upload error:', error);
       toast({
@@ -88,6 +98,12 @@ export const FileUploader = () => {
       });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
     }
   };
 
@@ -118,28 +134,22 @@ export const FileUploader = () => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="file"
-              render={({ field: { onChange, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Upload File (PDF/DOC/Image)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="file" 
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                      className="cursor-pointer"
-                      onChange={(e) => {
-                        if (e.target.files?.[0]) {
-                          onChange(e.target.files[0]);
-                        }
-                      }}
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
+            <FormItem>
+              <FormLabel>Upload File (PDF/DOC/Image)</FormLabel>
+              <FormControl>
+                <Input 
+                  type="file" 
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  className="cursor-pointer"
+                  onChange={handleFileChange}
+                />
+              </FormControl>
+              {selectedFile && (
+                <p className="text-sm text-green-600">
+                  File selected: {selectedFile.name}
+                </p>
               )}
-            />
+            </FormItem>
             
             <FormField
               control={form.control}
