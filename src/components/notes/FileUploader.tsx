@@ -22,6 +22,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { supabase } from '@/integrations/supabase/client';
+import { uploadFile } from '@/lib/supabase-utils';
 
 const subjects = [
   'Mathematics',
@@ -31,11 +33,11 @@ const subjects = [
   'Computer Science',
 ];
 
-// Define form schema with zod
 const formSchema = z.object({
-  file: z.any(),
-  subject: z.string().optional(),
+  file: z.any().refine((file) => file instanceof File, "Please select a file"),
+  subject: z.string().min(1, "Please select a subject"),
   description: z.string().optional(),
+  title: z.string().min(1, "Please enter a title")
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -44,29 +46,49 @@ export const FileUploader = () => {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   
-  // Initialize the form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       subject: '',
       description: '',
+      title: '',
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    setIsUploading(true);
-    
-    // Simulate upload delay
-    setTimeout(() => {
-      setIsUploading(false);
+  const onSubmit = async (data: FormValues) => {
+    try {
+      setIsUploading(true);
+      
+      // Upload file to storage bucket
+      const filePath = await uploadFile(data.file);
+
+      // Insert note metadata into database
+      const { error } = await supabase.from('notes').insert({
+        title: data.title,
+        description: data.description || null,
+        subject: data.subject,
+        file_path: filePath,
+        uploader_id: (await supabase.auth.getUser()).data.user?.id,
+      });
+
+      if (error) throw error;
+
       toast({
         title: "Success! 🎉",
         description: "Your notes have been shared with the community.",
       });
+      
       form.reset();
-    }, 1500);
-    
-    console.log('Form data:', data);
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload notes. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -85,8 +107,21 @@ export const FileUploader = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="file"
+              name="title"
               render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Give your notes a title..." {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field: { onChange, ...field } }) => (
                 <FormItem>
                   <FormLabel>Upload File (PDF/DOC/Image)</FormLabel>
                   <FormControl>
@@ -95,10 +130,11 @@ export const FileUploader = () => {
                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                       className="cursor-pointer"
                       onChange={(e) => {
-                        if (e.target.files) {
-                          field.onChange(e.target.files[0]);
+                        if (e.target.files?.[0]) {
+                          onChange(e.target.files[0]);
                         }
                       }}
+                      {...field}
                     />
                   </FormControl>
                 </FormItem>
