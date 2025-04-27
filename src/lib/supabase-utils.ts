@@ -4,46 +4,89 @@ import { toast } from "sonner";
 
 export async function uploadFile(file: File, bucketName: string = 'notes') {
   try {
+    if (!file) {
+      throw new Error("No file selected");
+    }
+
     // Check if bucket exists and create it if not
     const { data: buckets } = await supabase.storage.listBuckets();
-    if (!buckets?.some(b => b.name === bucketName)) {
-      await supabase.storage.createBucket(bucketName, {
+    const bucketExists = buckets?.some(b => b.name === bucketName);
+    
+    if (!bucketExists) {
+      console.log(`Bucket ${bucketName} not found, creating it...`);
+      const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: true,
         fileSizeLimit: 50000000 // 50MB limit
       });
+      
+      if (createError) {
+        console.error("Error creating bucket:", createError);
+        throw new Error(`Failed to create storage bucket: ${createError.message}`);
+      }
+      
+      // Wait a moment for bucket creation to propagate
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
-    // Upload the file
+    // Generate a clean file path
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `${fileName}`;
+    const filePath = fileName; // Simple path without extra slashes
 
+    // Determine content type
+    const contentType = file.type || `application/${fileExt}`;
+    console.log(`Uploading file ${filePath} with content type ${contentType}`);
+    
+    // Upload the file with explicit content type
     const { data, error } = await supabase.storage
       .from(bucketName)
-      .upload(filePath, file);
+      .upload(filePath, file, {
+        contentType: contentType,
+        cacheControl: '3600'
+      });
 
-    if (error) throw error;
-    if (!data) throw new Error("Upload failed with no data returned");
+    if (error) {
+      console.error("Upload error details:", error);
+      throw error;
+    }
     
+    if (!data) {
+      throw new Error("Upload failed with no data returned");
+    }
+    
+    // Return the full public URL
+    const { data: publicUrlData } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(data.path);
+      
     return data.path;
   } catch (error: any) {
     console.error("Upload file error:", error);
+    toast.error(`Upload failed: ${error.message || "Unknown error"}`);
     throw new Error(`File upload failed: ${error.message || "Unknown error"}`);
   }
 }
 
 export async function downloadFile(path: string, bucketName: string = 'notes') {
   try {
+    console.log(`Downloading file from path: ${path} in bucket: ${bucketName}`);
     const { data, error } = await supabase.storage
       .from(bucketName)
       .download(path);
 
-    if (error) throw error;
-    if (!data) throw new Error("Download failed with no data returned");
+    if (error) {
+      console.error("Download error details:", error);
+      throw error;
+    }
+    
+    if (!data) {
+      throw new Error("Download failed with no data returned");
+    }
     
     return data;
   } catch (error: any) {
     console.error("Download file error:", error);
+    toast.error(`Download failed: ${error.message || "Unknown error"}`);
     throw new Error(`File download failed: ${error.message || "Unknown error"}`);
   }
 }
