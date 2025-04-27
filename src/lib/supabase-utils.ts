@@ -54,11 +54,14 @@ export async function uploadFile(file: File, bucketName: string = 'notes') {
       throw new Error("Upload failed with no data returned");
     }
     
-    // Return the full public URL
+    // Get the public URL for the uploaded file
     const { data: publicUrlData } = supabase.storage
       .from(bucketName)
       .getPublicUrl(data.path);
       
+    console.log("Upload successful, path:", data.path);
+    console.log("Public URL:", publicUrlData?.publicUrl);
+    
     return data.path;
   } catch (error: any) {
     console.error("Upload file error:", error);

@@ -41,7 +41,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="light">
+    <ThemeProvider defaultTheme="light" attribute="class">
       <Routes>
         <Route path="/" element={<Index />} />
         <Route 
