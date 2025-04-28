@@ -65,32 +65,37 @@ export const FileUploader = () => {
       
       console.log('Starting file upload process for:', selectedFile.name);
       
-      // Use the uploadFile utility function to handle the file upload
-      const filePath = await uploadFile(selectedFile, 'notes');
-      
-      console.log('File uploaded successfully to path:', filePath);
+      try {
+        // Use the uploadFile utility function to handle the file upload
+        const filePath = await uploadFile(selectedFile, 'notes');
+        
+        console.log('File uploaded successfully to path:', filePath);
 
-      // Insert note metadata into database
-      const { error: dbError } = await supabase.from('notes').insert({
-        title: data.title,
-        description: data.description || null,
-        subject: data.subject,
-        file_path: filePath,
-        uploader_id: (await supabase.auth.getUser()).data.user?.id || '00000000-0000-0000-0000-000000000000',
-      });
+        // Insert note metadata into database
+        const { error: dbError } = await supabase.from('notes').insert({
+          title: data.title,
+          description: data.description || null,
+          subject: data.subject,
+          file_path: filePath,
+          uploader_id: (await supabase.auth.getUser()).data.user?.id || '00000000-0000-0000-0000-000000000000',
+        });
 
-      if (dbError) {
-        console.error('Database error:', dbError);
-        throw dbError;
+        if (dbError) {
+          console.error('Database error:', dbError);
+          throw dbError;
+        }
+
+        toast.success("Your notes have been shared with the community.");
+        
+        form.reset();
+        setSelectedFile(null);
+      } catch (uploadError: any) {
+        console.error("Upload or database error:", uploadError);
+        toast.error(uploadError.message || "Failed to upload notes. Please try again.");
       }
-
-      toast.success("Your notes have been shared with the community.");
-      
-      form.reset();
-      setSelectedFile(null);
     } catch (error) {
-      console.error('Upload error:', error);
-      toast.error("Failed to upload notes. Please try again.");
+      console.error('Form submission error:', error);
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsUploading(false);
     }

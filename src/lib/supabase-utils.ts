@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -8,24 +7,23 @@ export async function uploadFile(file: File, bucketName: string = 'notes') {
       throw new Error("No file selected");
     }
 
-    // Check if bucket exists and create it if not
-    const { data: buckets } = await supabase.storage.listBuckets();
+    // Instead of creating a bucket, first check if it exists
+    // and if not, we'll handle that case differently
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+    
+    if (bucketsError) {
+      console.error("Error checking buckets:", bucketsError);
+      throw new Error(`Failed to check storage buckets: ${bucketsError.message}`);
+    }
+    
     const bucketExists = buckets?.some(b => b.name === bucketName);
     
     if (!bucketExists) {
-      console.log(`Bucket ${bucketName} not found, creating it...`);
-      const { error: createError } = await supabase.storage.createBucket(bucketName, {
-        public: true,
-        fileSizeLimit: 50000000 // 50MB limit
-      });
-      
-      if (createError) {
-        console.error("Error creating bucket:", createError);
-        throw new Error(`Failed to create storage bucket: ${createError.message}`);
-      }
-      
-      // Wait a moment for bucket creation to propagate
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // If bucket doesn't exist, we need to inform the user
+      // because client-side bucket creation might be blocked by RLS
+      console.log(`Bucket ${bucketName} not found`);
+      toast.error(`Storage bucket "${bucketName}" not found. Please contact an administrator.`);
+      throw new Error(`Storage bucket "${bucketName}" does not exist and could not be created automatically due to permissions.`);
     }
     
     // Generate a clean file path
